@@ -32,10 +32,13 @@ export default function SignIn() {
           error: action.payload,
           token: handleToken(null),
         };
+      default:
+        console.log("wrong type");
+        break;
     }
   };
 
-  const [{ loading, error, token }, dispatch] = useReducer(
+  const [{ loading, error }, dispatch] = useReducer(
     userAuth,
     initialState
   );
@@ -52,7 +55,6 @@ export default function SignIn() {
       });
       const data = await res.json();
       dispatch({ type: "signIn-success", payload: data.token });
-
     } catch (error) {
       dispatch({
         type: "signIn-fail",
@@ -61,13 +63,18 @@ export default function SignIn() {
     }
   };
   return (
-    <form onSubmit={handleSubmit}>
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col max-w-lg mx-auto gap-5    mt-10"
+    >
       <input
         type="text"
         id="username"
         onChange={(e) =>
           setFormData({ ...formData, [e.target.id]: e.target.value })
         }
+        className="border-b-[1px] border-slate-400 px-3 py-2 outline-none focus:border-black duration-200 focus:box-shadow-lg bg-transparent "
+        placeholder="Enter your username"
       />
       <input
         type="text"
@@ -75,8 +82,17 @@ export default function SignIn() {
         onChange={(e) =>
           setFormData({ ...formData, [e.target.id]: e.target.value })
         }
+        className="border-b-[1px] border-slate-400 px-3 py-2 outline-none focus:border-black duration-200 focus:box-shadow-lg bg-transparent "
+        placeholder="Enter your password"
       />
-      <button type="submit">Sign In</button>
+      <button
+        type="submit"
+        disabled={loading || !formData.username || !formData.password}
+        className="py-2 w-full border-slate-400 border-[1px] mt-7 hover:border-black duration-300 active:scale-95 rounded-sm disabled:opacity-80 disabled:bg-gray-100 disabled:pointer-events-none"
+      >
+        {loading ? "Loading..." : "Sign In"}
+      </button>
+      {error && <p className="text-red-500 mt-5">{error}</p>}
     </form>
   );
 }
